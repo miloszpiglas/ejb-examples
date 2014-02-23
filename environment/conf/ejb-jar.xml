@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ejb-jar xmlns="http://xmlns.jcp.org/xml/ns/javaee"
+        version="3.2"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/javaee http://xmlns.jcp.org/xml/ns/javaee/ejb-jar_3_2.xsd">
+    <enterprise-beans>
+        <session>
+            <ejb-name>testBean</ejb-name>
+            <ejb-class>pl.mpiglas.envejb.beans.TestStringBean</ejb-class>
+            <ejb-local-ref>
+                <!-- To reference in class TestStringBean called ejb/transformBean we inject instance of
+                    Stateless Session Bean called 'upperCase'                -->
+                <ejb-ref-name>ejb/transformBean</ejb-ref-name>
+                <local>pl.mpiglas.envejb.client.StringBean</local>
+                <ejb-link>upperCase</ejb-link> <!-- name of Stateless bean declared with annotation @Stateless -->
+            </ejb-local-ref>
+            <ejb-local-ref>
+                <!-- To refrence in class TestStringBean called ejb/concatenateBean we inject instance of
+                    class SuffixStringBean. This entry overrides declaration made in TestStringBean, which 
+                    says, that ejb/concatenateBean should refer to PrefixStringBean-->
+                <ejb-ref-name>ejb/concatenateBean</ejb-ref-name>
+                <local>pl.mpiglas.envejb.client.StringBean</local>
+                <ejb-link>SufixStringBean</ejb-link>
+            </ejb-local-ref>
+        </session>
+        
+        <session>
+            <ejb-name>prefix</ejb-name>
+            <ejb-class>pl.mpiglas.envejb.beans.PrefixStringBean</ejb-class>
+            <!-- to reference prefixValue in class PrefixStringBean we inject value 'decriptor_' of type String-->
+            <env-entry>
+                <!-- we have to use fully qualified name of reference - i.e package_name.class_name/reference_name
+                to select referenc to inject, because we did not declared name of reference with annotation @Resource -->
+                <env-entry-name>pl.mpiglas.envejb.beans.PrefixStringBean/prefixValue</env-entry-name>
+                <env-entry-type>java.lang.String</env-entry-type>
+                <env-entry-value>descriptor_</env-entry-value>
+                </env-entry>
+        </session>
+        <session>
+            <ejb-name>SufixStringBean</ejb-name>
+            <ejb-class>pl.mpiglas.envejb.beans.SufixStringBean</ejb-class>
+            <!-- to reference sufixValue in class SufixStringBean we inject value '_desc' of type String-->
+            <env-entry>
+                <!-- because we declared name of reference with @Resource annotation, 
+                we can use it instead fully qualified name as in example above-->
+                <env-entry-name>sufixValue</env-entry-name>
+                <env-entry-type>java.lang.String</env-entry-type>
+                <env-entry-value>_desc</env-entry-value>
+                </env-entry>
+        </session>
+    </enterprise-beans>
+
+</ejb-jar>
